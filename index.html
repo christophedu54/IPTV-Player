@@ -10,10 +10,7 @@
 <body>
     <h2>Improved IPTV Player</h2>
     <div id="container">
-        <div id="playlist">
-            <h3>Playlist</h3>
-            <ul id="streamList"></ul>
-        </div>
+        <button id="openPlaylistBtn">Open Playlist</button>
         <div id="playerContainer">
             <video id="videoPlayer" controls></video>
             <h3 id="streamTitle">Loading...</h3>
@@ -23,11 +20,10 @@
     <script>
         document.addEventListener("DOMContentLoaded", function () {
             var videoElement = document.getElementById("videoPlayer");
-            var streamList = document.getElementById("streamList");
             var streamTitle = document.getElementById("streamTitle");
             var m3uUrls = [
                 "https://iptv-org.github.io/iptv/countries/fr.m3u"
-            ];
+                            ];
 
             let streams = [];
 
@@ -50,24 +46,13 @@
                         console.error("Error loading M3U:", error);
                     }
                 }
-                
+
                 if (streams.length === 0) {
-                    streamList.innerHTML = "<p>No streams found.</p>";
+                    alert("No streams found.");
                     return;
                 }
-                
-                streams.forEach((stream, index) => {
-                    let listItem = document.createElement("li");
-                    listItem.textContent = stream.title;
-                    listItem.onclick = () => playStream(stream);
-                    streamList.appendChild(listItem);
-                    
-                    if (index === 0) {
-                        playStream(stream);
-                    }
-                });
             }
-            
+
             function playStream(stream) {
                 streamTitle.textContent = stream.title;
                 if (Hls.isSupported()) {
@@ -82,6 +67,26 @@
                     videoElement.play();
                 }
             }
+
+            // Popup window for playlist
+            document.getElementById("openPlaylistBtn").addEventListener("click", function() {
+                let popup = window.open("", "Playlist", "width=400,height=600");
+                popup.document.write("<h2>Stream Playlist</h2>");
+                let list = popup.document.createElement("ul");
+
+                streams.forEach((stream) => {
+                    let listItem = popup.document.createElement("li");
+                    listItem.textContent = stream.title;
+                    listItem.style.cursor = "pointer";
+                    listItem.onclick = function () {
+                        playStream(stream);
+                        popup.close(); // Close the popup after selecting a stream
+                    };
+                    list.appendChild(listItem);
+                });
+
+                popup.document.body.appendChild(list);
+            });
 
             loadStreams();
         });
