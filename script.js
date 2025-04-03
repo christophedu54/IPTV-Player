@@ -1,59 +1,87 @@
 document.addEventListener("DOMContentLoaded", function () {
     var videoElement = document.getElementById("videoPlayer");
     var streamList = document.getElementById("streamList");
-    var m3uUrl = "https://iptv-org.github.io/iptv/countries/fr.m3u"; // Replace with your M3U file URL
+    var streamTitle = document.getElementById("streamTitle");
+    var m3uUrls = [
+        "https://iptv-org.github.io/iptv/countries/fr.m3u",  // French Channels
+        "https://iptv-org.github.io/iptv/categories/news.m3u" // News Channels
+    ];
 
-    // Fetch and parse the M3U file
-    fetch(m3uUrl)
-        .then(response => response.text())
-        .then(data => {
-            let lines = data.split("\n");
-            let streams = [];
-            
-            for (let i = 0; i < lines.length; i++) {
-                if (lines[i].startsWith("#EXTINF")) {
-                    let title = lines[i].split(",")[1]; // Extract stream title
-                    let url = lines[i + 1]?.trim(); // The next line is the stream URL
-                    if (url) {
-                        streams.push({ title, url });
+    let streams = [];
+
+    // Check if a stream works
+    function checkStream(url) {
+        return new Promise((resolve) => {
+            let testVideo = document.createElement("video");
+            testVideo.src = url;
+            testVideo.onloadeddata = () => resolve(true);
+            testVideo.onerror = () => resolve(false);
+        });
+    }
+
+    // Fetch and filter working streams from multiple M3U lists
+    async function loadStreams() {
+        for (let m3uUrl of m3uUrls) {
+            try {
+                let response = await fetch(m3uUrl);
+                let data = await response.text();
+                let lines = data.split("\n");
+
+                for (let i = 0; i < lines.length; i++) {
+                    if (lines[i].startsWith("#EXTINF")) {
+                        let title = lines[i].split(",")[1]; // Get channel name
+                        let url = lines[i + 1]?.trim(); // Get stream URL
+
+                        if (url) {
+                            let isValid = await checkStream(url);
+                            if (isValid) {
+                                streams.push({ title, url });
+                            }
+                        }
                     }
                 }
+            } catch (error) {
+                console.error("Error loading M3U:", error);
             }
+        }
 
-            if (streams.length === 0) {
-                console.error("No valid streams found.");
-                return;
-            }
+        if (streams.length === 0) {
+            streamList.innerHTML = "<p>No working streams found.</p>";
+            return;
+        }
 
-            // Create buttons for each stream
-            streams.forEach((stream, index) => {
-                let button = document.createElement("button");
-                button.textContent = stream.title || `Stream ${index + 1}`;
-                button.onclick = () => playStream(stream.url);
-                streamList.appendChild(button);
-            });
+        // Add working streams as buttons
+        streams.forEach((stream, index) => {
+            let button = document.createElement("button");
+            button.textContent = stream.title || `Stream ${index + 1}`;
+            button.onclick = () => playStream(stream);
+            streamList.appendChild(button);
+        });
 
-            // Auto-play the first stream
-            playStream(streams[0].url);
-        })
-        .catch(error => console.error("Error fetching M3U:", error));
+        // Auto-play first valid stream
+        playStream(streams[0]);
+    }
 
-    // Function to play a selected stream
-    function playStream(url) {
-        console.log("Playing:", url);
+    // Play selected stream
+    function playStream(stream) {
+        streamTitle.textContent = stream.title || "Unknown Stream";
+        console.log("Playing:", stream.url);
 
         if (Hls.isSupported()) {
             let hls = new Hls();
-            hls.loadSource(url);
+            hls.loadSource(stream.url);
             hls.attachMedia(videoElement);
             hls.on(Hls.Events.MANIFEST_PARSED, function () {
                 videoElement.play();
             });
         } else if (videoElement.canPlayType("application/vnd.apple.mpegurl")) {
-            videoElement.src = url;
+            videoElement.src = stream.url;
             videoElement.play();
         } else {
-            console.error("HLS is not supported on this device.");
+            console.error("HLS not supported on this device.");
         }
     }
+
+    // Load streams on page load
+    loadStreams();
 });
