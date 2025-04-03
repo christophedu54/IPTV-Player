@@ -9,11 +9,16 @@
 </head>
 <body>
     <h2>Improved IPTV Player</h2>
-    <div id="playerContainer">
-        <video id="videoPlayer" controls></video>
-        <h3 id="streamTitle">Loading...</h3>
+    <div id="container">
+        <div id="playlist">
+            <h3>Playlist</h3>
+            <ul id="streamList"></ul>
+        </div>
+        <div id="playerContainer">
+            <video id="videoPlayer" controls></video>
+            <h3 id="streamTitle">Loading...</h3>
+        </div>
     </div>
-    <div id="streamList"></div>
 
     <script>
         document.addEventListener("DOMContentLoaded", function () {
@@ -21,8 +26,7 @@
             var streamList = document.getElementById("streamList");
             var streamTitle = document.getElementById("streamTitle");
             var m3uUrls = [
-                "https://iptv-org.github.io/iptv/countries/fr.m3u",
-                "https://iptv-org.github.io/iptv/categories/news.m3u"
+                "https://iptv-org.github.io/iptv/countries/fr.m3u"
             ];
 
             let streams = [];
@@ -53,13 +57,15 @@
                 }
                 
                 streams.forEach((stream, index) => {
-                    let button = document.createElement("button");
-                    button.textContent = stream.title;
-                    button.onclick = () => playStream(stream);
-                    streamList.appendChild(button);
+                    let listItem = document.createElement("li");
+                    listItem.textContent = stream.title;
+                    listItem.onclick = () => playStream(stream);
+                    streamList.appendChild(listItem);
+                    
+                    if (index === 0) {
+                        playStream(stream);
+                    }
                 });
-                
-                playStream(streams[0]);
             }
             
             function playStream(stream) {
