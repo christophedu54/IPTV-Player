@@ -3,8 +3,7 @@ document.addEventListener("DOMContentLoaded", function () {
     var streamList = document.getElementById("streamList");
     var streamTitle = document.getElementById("streamTitle");
     var m3uUrls = [
-        "https://iptv-org.github.io/iptv/countries/fr.m3u",  // French Channels
-        "https://iptv-org.github.io/iptv/categories/news.m3u" // News Channels
+        "https://iptv-org.github.io/iptv/countries/fr.m3u"  // French Channels
     ];
 
     let streams = [];
