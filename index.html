@@ -21,21 +21,11 @@
             var streamList = document.getElementById("streamList");
             var streamTitle = document.getElementById("streamTitle");
             var m3uUrls = [
-                "https://iptv-org.github.io/iptv/countries/fr.m3u"
+                "https://iptv-org.github.io/iptv/countries/fr.m3u",
+                "https://iptv-org.github.io/iptv/categories/news.m3u"
             ];
 
             let streams = [];
-
-            async function checkStream(url) {
-                try {
-                    let testVideo = document.createElement("video");
-                    testVideo.src = url;
-                    await testVideo.play();
-                    return true;
-                } catch {
-                    return false;
-                }
-            }
 
             async function loadStreams() {
                 for (let m3uUrl of m3uUrls) {
@@ -48,10 +38,7 @@
                                 let title = lines[i].split(",")[1] || "Unknown";
                                 let url = lines[i + 1]?.trim();
                                 if (url) {
-                                    let isValid = await checkStream(url);
-                                    if (isValid) {
-                                        streams.push({ title, url });
-                                    }
+                                    streams.push({ title, url });
                                 }
                             }
                         }
@@ -61,7 +48,7 @@
                 }
                 
                 if (streams.length === 0) {
-                    streamList.innerHTML = "<p>No working streams found.</p>";
+                    streamList.innerHTML = "<p>No streams found.</p>";
                     return;
                 }
                 
