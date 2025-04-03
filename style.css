@@ -7,6 +7,23 @@ body {
     padding: 20px;
 }
 
+#container {
+    margin: 20px;
+}
+
+button {
+    background-color: #ff6600;
+    border: none;
+    color: white;
+    padding: 10px;
+    border-radius: 5px;
+    cursor: pointer;
+}
+
+button:hover {
+    background-color: #ff4500;
+}
+
 #playerContainer {
     position: relative;
     width: 80%;
@@ -18,22 +35,4 @@ video {
     width: 100%;
     border-radius: 10px;
     box-shadow: 0px 0px 10px rgba(255, 255, 255, 0.2);
-}
-
-#controls, #streamList {
-    margin-top: 10px;
-}
-
-button {
-    background-color: #ff6600;
-    border: none;
-    color: white;
-    padding: 10px;
-    margin: 5px;
-    border-radius: 5px;
-    cursor: pointer;
-}
-
-button:hover {
-    background-color: #ff4500;
 }
