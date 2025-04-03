@@ -1,0 +1,39 @@
+body {
+    font-family: Arial, sans-serif;
+    text-align: center;
+    background-color: #222;
+    color: white;
+    margin: 0;
+    padding: 20px;
+}
+
+#playerContainer {
+    position: relative;
+    width: 80%;
+    max-width: 800px;
+    margin: 20px auto;
+}
+
+video {
+    width: 100%;
+    border-radius: 10px;
+    box-shadow: 0px 0px 10px rgba(255, 255, 255, 0.2);
+}
+
+#controls, #streamList {
+    margin-top: 10px;
+}
+
+button {
+    background-color: #ff6600;
+    border: none;
+    color: white;
+    padding: 10px;
+    margin: 5px;
+    border-radius: 5px;
+    cursor: pointer;
+}
+
+button:hover {
+    background-color: #ff4500;
+}
