@@ -22,46 +22,36 @@
             var videoElement = document.getElementById("videoPlayer");
             var streamTitle = document.getElementById("streamTitle");
             var m3uUrls = [
-                "https://iptv-org.github.io/iptv/countries/fr.m3u",
-                "https://tv.ornethd.net/iptv6_ornethd.m3u"
-                            ];
+                "https://iptv-org.github.io/iptv/countries/fr.m3u"
+                                    ];
 
             let streams = [];
 
             async function loadStreams() {
-    for (let m3uUrl of m3uUrls) {
-        try {
-            let response = await fetch(m3uUrl, {
-                method: 'GET',
-                mode: 'no-cors'  // Use no-cors to bypass CORS restrictions
-            });
-
-            // Note: The no-cors mode prevents us from reading the response body. 
-            // So the logic below for processing the response will not work.
-            // This is a limitation of no-cors mode, you typically can only send data to a server.
-            // You'll need a proxy or CORS-enabled server to fetch the actual M3U content.
-            let data = await response.text();  // This won't work with no-cors!
-
-            let lines = data.split("\n");
-            for (let i = 0; i < lines.length; i++) {
-                if (lines[i].startsWith("#EXTINF")) {
-                    let title = lines[i].split(",")[1] || "Unknown"; // Extract stream title
-                    let url = lines[i + 1]?.trim();  // Get the URL from the next line
-                    if (url) {
-                        streams.push({ title, url });  // Add stream to the list
+                for (let m3uUrl of m3uUrls) {
+                    try {
+                        let response = await fetch(m3uUrl);
+                        let data = await response.text();
+                        let lines = data.split("\n");
+                        for (let i = 0; i < lines.length; i++) {
+                            if (lines[i].startsWith("#EXTINF")) {
+                                let title = lines[i].split(",")[1] || "Unknown";
+                                let url = lines[i + 1]?.trim();
+                                if (url) {
+                                    streams.push({ title, url });
+                                }
+                            }
+                        }
+                    } catch (error) {
+                        console.error("Error loading M3U:", error);
                     }
                 }
-            }
-        } catch (error) {
-            console.error("Error loading M3U:", error);
-        }
-    }
 
-    if (streams.length === 0) {
-        alert("No streams found.");
-        return;
-    }
-}
+                if (streams.length === 0) {
+                    alert("No streams found.");
+                    return;
+                }
+            }
 
             function playStream(stream) {
                 streamTitle.textContent = stream.title;
